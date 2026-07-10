@@ -13,7 +13,7 @@ def compute_loss(pred,target):
     loss = np.mean((pred-target)**2)
     return loss
 
-def backward(predict,target):
+def backward(x,predict,target):
     grad_pred = 2*(predict-target)/target.size
     
     grad_w = x.T@grad_pred
