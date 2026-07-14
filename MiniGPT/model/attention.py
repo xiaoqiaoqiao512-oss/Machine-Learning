@@ -5,15 +5,17 @@ import math
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_model, num_heads):
         super().__init__()
+
         self.d_model = d_model
-        assert d_model % num_heads == 0
         self.num_heads = num_heads
+        assert d_model % num_heads == 0
         self.head_dim = d_model // num_heads
+
         self.W_q = nn.Linear(d_model, d_model)
         self.W_k = nn.Linear(d_model, d_model)
         self.W_v = nn.Linear(d_model, d_model)
         self.W_o = nn.Linear(d_model, d_model)
-    
+
     def forward(self, x):
         batch_size = x.shape[0]
         seq_len = x.shape[1]
@@ -31,27 +33,11 @@ class MultiHeadAttention(nn.Module):
         V = V.transpose(1, 2)
 
         score = torch.matmul(Q, K.transpose(-2, -1))
-        attention = torch.softmax(score / math.sqrt(self.num_heads), dim = -1)
-        output = torch.matmul(attention,V)
+        score = torch.softmax(score / math.sqrt(self.head_dim), dim = -1)
+        attention = torch.matmul(score, V)
 
-        output = output.transpose(1, 2)
-        output = output.contiguous()
-
-        output = output.view(batch_size, seq_len, self.d_model)
+        output = attention.transpose(1, 2)
+        output = output.reshape(batch_size, seq_len, self.d_model)
         output = self.W_o(output)
 
         return output
-
-if __name__ == "__main__":
-    torch.manual_seed(0)
-    x = torch.randn(2, 3, 8)
-
-    mha = MultiHeadAttention(
-        d_model=8,
-        num_heads=2
-    )
-
-    output = mha(x)
-
-    print(x.shape)
-    print(output.shape)
