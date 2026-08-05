@@ -3,7 +3,7 @@ import torch.nn as nn
 import math
 
 class MultiHeadAttention(nn.Module):
-    def __init__(self, d_model, num_heads):
+    def __init__(self, d_model, num_heads, max_seq_len):
         super().__init__()
 
         self.d_model = d_model
@@ -15,6 +15,16 @@ class MultiHeadAttention(nn.Module):
         self.W_k = nn.Linear(d_model, d_model)
         self.W_v = nn.Linear(d_model, d_model)
         self.W_o = nn.Linear(d_model, d_model)
+
+        self.register_buffer(
+            "mask",
+            torch.tril(
+                torch.ones(
+                    max_seq_len,
+                    max_seq_len
+                )
+            )
+        )
 
     def forward(self, x):
         batch_size = x.shape[0]
@@ -33,6 +43,14 @@ class MultiHeadAttention(nn.Module):
         V = V.transpose(1, 2)
 
         score = torch.matmul(Q, K.transpose(-2, -1))
+
+        mask = self.mask[:seq_len, :seq_len]
+
+        score = score.masked_fill(
+            mask == 0,
+            float("-inf")
+        )
+
         score = torch.softmax(score / math.sqrt(self.head_dim), dim = -1)
         attention = torch.matmul(score, V)
 

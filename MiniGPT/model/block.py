@@ -8,7 +8,7 @@ from config import GPTConfig
 class TransformerBlock(nn.Module):
     def __init__(self, config: GPTConfig):
         super().__init__()
-        self.attention = MultiHeadAttention(d_model=config.d_model, num_heads=config.num_heads)
+        self.attention = MultiHeadAttention(d_model=config.d_model, num_heads=config.num_heads, max_seq_len=config.max_seq_len)
         self.ffn = FeedForward(d_model=config.d_model)
         self.norm1 = nn.LayerNorm(config.d_model)
         self.norm2 = nn.LayerNorm(config.d_model)

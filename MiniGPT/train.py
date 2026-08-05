@@ -10,7 +10,7 @@ def train():
     config = GPTConfig()
     model = MiniGPT(config)
 
-    device = torch(config.device)
+    device = torch.device(config.device)
     model.to(device)
 
     dataset = ToyDataset(
@@ -18,7 +18,7 @@ def train():
         seq_len=config.max_seq_len,
         num_samples=1000,
     )
-    dataloader = dataloader(
+    dataloader = DataLoader(
         dataset,
         batch_size = config.batch_size,
         shuffle=True,
