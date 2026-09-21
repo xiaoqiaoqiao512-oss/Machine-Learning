@@ -10,7 +10,11 @@ model = MiniGPT(config)
 x = torch.randint(
     0,
     config.vocab_size,
-    (2, 8)
+    (2, config.max_seq_len)
 )
-y = model(x)
-print(y.shape)
+
+logits = model(x)
+
+print(x.shape)
+
+print(logits.shape)
