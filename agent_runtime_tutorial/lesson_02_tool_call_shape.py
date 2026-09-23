@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Literal, Optional
 
 
-Role = Literal["system", "user", "assistant"]
+Role = Literal["system", "user", "assistant", "tool"]
 
 
 @dataclass(frozen=True)
@@ -25,6 +25,8 @@ class Message:
     role: Role
     content: Optional[str] = None
     tool_calls: tuple[ToolCall, ...] = ()
+    tool_call_id: Optional[str] = None
+    tool_call_name: Optional[str] = None
 
 
 def build_weather_tool_call_message() -> Message:
