@@ -70,8 +70,7 @@ def main() -> None:
             tool_call=tool_call,
             tool=weather_tool,
         )
-
-        
+        messages.append(observation)
 
     final_message = llm.complete(messages)
     messages.append(final_message)
